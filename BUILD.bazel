@@ -1,0 +1,5 @@
+filegroup(
+    name = "package_json",
+    srcs = ["package.json"],
+    visibility = ["//react:__pkg__"]
+)

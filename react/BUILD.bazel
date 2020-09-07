@@ -1,0 +1,80 @@
+load(":jest.bzl", "jest_test")
+load("@npm//webpack-cli:index.bzl", webpack = "webpack_cli")
+load("@npm//webpack-dev-server:index.bzl", "webpack_dev_server")
+
+filegroup(
+    name = "create_react_app",
+    srcs = glob(
+        [
+            "config/*.js",
+            "public/**/*",
+            "src/**/*"
+        ],
+        exclude = [
+            "src/index.js",
+            "src/**/*.test.js",
+            "src/setupTests.js",
+            "webpack-*.config.js"
+        ]
+    )
+)
+
+webpack(
+    name = "build",
+    output_dir = True,
+    args = [
+        "$(execpath src/index.js)",
+        "--config",
+        "$(execpath webpack-prod.config.js)",
+        "--mode",
+        "production",
+        "--output-path",
+        "$(@D)",
+    ],
+    data = [
+        "src/index.js",
+        "webpack-prod.config.js",
+        ":create_react_app",
+        "//:package_json",
+        "@npm//:node_modules"
+    ]
+)
+
+webpack_dev_server(
+    name = "server",
+    args = [
+        "--config",
+        "$(execpath webpack-dev.config.js)"
+    ],
+    data = [
+        "src/index.js",
+        "webpack-dev.config.js",
+        ":create_react_app",
+        "//:package_json",
+        "@npm//:node_modules"
+    ],
+    tags = [
+        "ibazel_notify_changes"
+    ]
+)
+
+jest_test(
+    name = "test",
+    srcs = glob(
+        [
+            "src/**/*.test.js",
+        ]
+    ),
+    jest_config = "jest.config.js",
+    data = glob(
+        [
+            "config/jest/*.js",
+            "src/setupTests.js"
+        ]
+    ),
+    deps = [
+        "//:package_json",
+        ":create_react_app",
+        "@npm//:node_modules"
+    ]
+)
