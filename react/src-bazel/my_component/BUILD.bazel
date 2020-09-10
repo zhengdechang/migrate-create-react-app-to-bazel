@@ -1,0 +1,17 @@
+load("//react:jest.bzl", "jest_test")
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
+
+ts_library(
+    name = "my_component",
+    srcs = glob(
+        [
+            "src/**/*.ts",
+            "src/**/*.tsx"
+        ]
+    ),
+    deps = [
+        "@npm//react"
+    ],
+    tsconfig = "//react:tsconfig",
+    visibility = ["//react:__pkg__"]
+)

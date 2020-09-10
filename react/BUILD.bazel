@@ -3,6 +3,12 @@ load("@npm//webpack-cli:index.bzl", webpack = "webpack_cli")
 load("@npm//webpack-dev-server:index.bzl", "webpack_dev_server")
 
 filegroup(
+    name = "tsconfig",
+    srcs = ["tsconfig.json"],
+    visibility = ["//react:__subpackages__"]
+)
+
+filegroup(
     name = "create_react_app",
     srcs = glob(
         [
@@ -36,6 +42,7 @@ webpack(
         "webpack-prod.config.js",
         ":create_react_app",
         "//:package_json",
+        "//react/src-bazel/my_component",
         "@npm//:node_modules"
     ]
 )
@@ -51,6 +58,7 @@ webpack_dev_server(
         "webpack-dev.config.js",
         ":create_react_app",
         "//:package_json",
+        "//react:my_component",
         "@npm//:node_modules"
     ],
     tags = [
@@ -73,8 +81,9 @@ jest_test(
         ]
     ),
     deps = [
-        "//:package_json",
         ":create_react_app",
+        "//:package_json",
+        "//react:my_component",
         "@npm//:node_modules"
     ]
 )
